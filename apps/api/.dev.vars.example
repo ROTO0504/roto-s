@@ -1,0 +1,6 @@
+SESSION_SECRET="dev-secret-please-change-to-32-bytes"
+INVITE_TOKEN="dev-invite-token"
+RP_ID="localhost"
+ORIGIN="http://localhost:8787"
+CF_ACCOUNT_ID=""
+CF_API_TOKEN=""

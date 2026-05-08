@@ -1,0 +1,28 @@
+name = "roto-s"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+RP_ID = "s.roto.work"
+RP_NAME = "roto-s"
+ORIGIN = "https://s.roto.work"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "roto-s-db"
+# `wrangler d1 create roto-s-db` で発行された ID を貼る
+database_id = "ab96efa5-f775-4aec-aa09-790f5c6bc2ea"
+migrations_dir = "migrations"
+
+[assets]
+directory = "../admin/dist"
+binding = "ASSETS"
+
+[[analytics_engine_datasets]]
+binding = "AE"
+dataset = "roto_s_clicks"
+
+[[routes]]
+pattern = "s.roto.work/*"
+zone_name = "roto.work"

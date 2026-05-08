@@ -29,9 +29,11 @@ jobs:
 
       - name: Apply D1 migrations
         uses: cloudflare/wrangler-action@v3
+        env:
+          WRANGLER_LOG: debug
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/api
-          wranglerVersion: "3.114.17"
+          wranglerVersion: "4.88.0"
           command: d1 migrations apply roto-s-db --${{ inputs.target }}

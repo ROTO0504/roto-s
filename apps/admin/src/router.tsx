@@ -13,7 +13,7 @@ async function requireAuth() {
     return null
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) {
-      throw redirect('/admin/login')
+      throw redirect('/login')
     }
     throw e
   }

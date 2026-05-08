@@ -39,5 +39,4 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           workingDirectory: apps/api
-          wranglerVersion: "4.88.0"
           command: d1 migrations apply roto-s-db --${{ inputs.target }}

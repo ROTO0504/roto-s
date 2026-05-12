@@ -18,17 +18,17 @@
 
 ## 技術選定
 
-| レイヤ | 採用 | 理由 |
-|---|---|---|
-| ランタイム | Cloudflare Workers | エッジで完結。リダイレクトを ~30ms で返す |
-| API | Hono | Workers ネイティブ・型安全・学習コスト最小 |
-| DB | D1 | エッジから読める SQLite。「キー1つ引き」と相性が良い |
-| クリック解析 | Analytics Engine | D1 書き込み枠を圧迫しない。SQL で集計可能 |
-| 管理画面 | Vite + React + React Router v7（Data Mode SPA） | 内部ツールで SEO 不要 → Next.js は過剰 |
-| スタイリング | Panda CSS | Type-safe / zero-runtime / recipes でデザインシステム化 |
-| アニメーション | GSAP（`@gsap/react`） | 一覧の stagger / コピー時の演出など限定的に |
-| 配置 | Workers Assets で同 Worker に同梱 | デプロイ1つで完結。CORS 不要 |
-| 認証 | WebAuthn / Passkey（自前） | パスワードレス。1人運用で UX 最強 |
+| レイヤ         | 採用                                            | 理由                                                    |
+| -------------- | ----------------------------------------------- | ------------------------------------------------------- |
+| ランタイム     | Cloudflare Workers                              | エッジで完結。リダイレクトを ~30ms で返す               |
+| API            | Hono                                            | Workers ネイティブ・型安全・学習コスト最小              |
+| DB             | D1                                              | エッジから読める SQLite。「キー1つ引き」と相性が良い    |
+| クリック解析   | Analytics Engine                                | D1 書き込み枠を圧迫しない。SQL で集計可能               |
+| 管理画面       | Vite + React + React Router v7（Data Mode SPA） | 内部ツールで SEO 不要 → Next.js は過剰                  |
+| スタイリング   | Panda CSS                                       | Type-safe / zero-runtime / recipes でデザインシステム化 |
+| アニメーション | GSAP（`@gsap/react`）                           | 一覧の stagger / コピー時の演出など限定的に             |
+| 配置           | Workers Assets で同 Worker に同梱               | デプロイ1つで完結。CORS 不要                            |
+| 認証           | WebAuthn / Passkey（自前）                      | パスワードレス。1人運用で UX 最強                       |
 
 ### なぜ Next.js ではなく Vite SPA か
 
@@ -145,28 +145,28 @@ bun run dev                       # http://localhost:5173/admin/
 
 ## API
 
-| Method | Path | 認証 | 説明 |
-|---|---|---|---|
-| `GET` | `/health` | – | ヘルスチェック |
-| `GET` | `/:slug` | – | 元 URL へ 301、UTM 自動マージ、AE にイベント書き込み |
-| `POST` | `/api/auth/login/options` | – | パスキー認証用 challenge |
-| `POST` | `/api/auth/login/verify` | – | 検証 → セッション Cookie |
-| `POST` | `/api/auth/register/options` | session or INVITE_TOKEN | 登録用 challenge |
-| `POST` | `/api/auth/register/verify` | session or INVITE_TOKEN | 検証 → D1 保存 |
-| `GET` | `/api/auth/me` | session | 認証状態確認 |
-| `GET` | `/api/auth/passkeys` | session | 登録済みパスキー一覧 |
-| `DELETE` | `/api/auth/passkeys/:id` | session | パスキー削除（最後の1個は不可） |
-| `POST` | `/api/links` | session | リンク作成 |
-| `GET` | `/api/links` | session | 一覧 |
-| `PATCH` | `/api/links/:slug` | session | URL / UTM 編集 |
-| `DELETE` | `/api/links/:slug` | session | 削除 |
-| `GET` | `/api/links/:slug/stats?range=7d` | session | AE から集計取得 |
+| Method   | Path                              | 認証                    | 説明                                                 |
+| -------- | --------------------------------- | ----------------------- | ---------------------------------------------------- |
+| `GET`    | `/health`                         | –                       | ヘルスチェック                                       |
+| `GET`    | `/:slug`                          | –                       | 元 URL へ 301、UTM 自動マージ、AE にイベント書き込み |
+| `POST`   | `/api/auth/login/options`         | –                       | パスキー認証用 challenge                             |
+| `POST`   | `/api/auth/login/verify`          | –                       | 検証 → セッション Cookie                             |
+| `POST`   | `/api/auth/register/options`      | session or INVITE_TOKEN | 登録用 challenge                                     |
+| `POST`   | `/api/auth/register/verify`       | session or INVITE_TOKEN | 検証 → D1 保存                                       |
+| `GET`    | `/api/auth/me`                    | session                 | 認証状態確認                                         |
+| `GET`    | `/api/auth/passkeys`              | session                 | 登録済みパスキー一覧                                 |
+| `DELETE` | `/api/auth/passkeys/:id`          | session                 | パスキー削除（最後の1個は不可）                      |
+| `POST`   | `/api/links`                      | session                 | リンク作成                                           |
+| `GET`    | `/api/links`                      | session                 | 一覧                                                 |
+| `PATCH`  | `/api/links/:slug`                | session                 | URL / UTM 編集                                       |
+| `DELETE` | `/api/links/:slug`                | session                 | 削除                                                 |
+| `GET`    | `/api/links/:slug/stats?range=7d` | session                 | AE から集計取得                                      |
 
 ## D1 スキーマ
 
 `apps/api/migrations/0001_init.sql` 参照。
 
-- `links`：slug, url, created_at, clicks, utm_*, expires_at, password_hash
+- `links`：slug, url, created*at, clicks, utm*\*, expires_at, password_hash
 - `passkeys`：credential_id, public_key, counter, transports, label, created_at, last_used_at
 
 ## ライセンス

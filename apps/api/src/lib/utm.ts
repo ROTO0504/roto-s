@@ -1,6 +1,6 @@
-import type { Link } from '../types'
+import type { Link } from "../types"
 
-export const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const
+export const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"] as const
 export type UtmKey = (typeof UTM_KEYS)[number]
 
 export function buildDestUrl(link: Link, reqUrl: URL): string {
@@ -17,7 +17,7 @@ export function buildDestUrl(link: Link, reqUrl: URL): string {
 export function pickUtmFromRequest(link: Link, reqUrl: URL): Record<UtmKey, string> {
   const out = {} as Record<UtmKey, string>
   for (const k of UTM_KEYS) {
-    out[k] = reqUrl.searchParams.get(k) ?? link[k] ?? ''
+    out[k] = reqUrl.searchParams.get(k) ?? link[k] ?? ""
   }
   return out
 }

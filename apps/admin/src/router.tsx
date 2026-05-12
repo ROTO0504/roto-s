@@ -1,19 +1,19 @@
-import { createBrowserRouter, redirect } from 'react-router'
-import { api, ApiError } from './lib/api'
-import { Layout } from './routes/_layout'
-import { LoginPage } from './routes/login'
-import { IndexPage, indexLoader } from './routes/index'
-import { NewPage } from './routes/new'
-import { LinkDetailPage, linkDetailLoader } from './routes/link-detail'
-import { SettingsPage, settingsLoader } from './routes/settings'
+import { createBrowserRouter, redirect } from "react-router"
+import { api, ApiError } from "./lib/api"
+import { Layout } from "./routes/_layout"
+import { LoginPage } from "./routes/login"
+import { IndexPage, indexLoader } from "./routes/index"
+import { NewPage } from "./routes/new"
+import { LinkDetailPage, linkDetailLoader } from "./routes/link-detail"
+import { SettingsPage, settingsLoader } from "./routes/settings"
 
 async function requireAuth() {
   try {
-    await api.get<{ ok: boolean }>('/api/auth/me')
+    await api.get<{ ok: boolean }>("/api/auth/me")
     return null
   } catch (e) {
     if (e instanceof ApiError && e.status === 401) {
-      throw redirect('/login')
+      throw redirect("/login")
     }
     throw e
   }
@@ -22,12 +22,12 @@ async function requireAuth() {
 export const router = createBrowserRouter(
   [
     {
-      path: '/',
+      path: "/",
       element: <Layout />,
       children: [
-        { path: 'login', element: <LoginPage /> },
+        { path: "login", element: <LoginPage /> },
         {
-          path: '',
+          path: "",
           loader: async () => {
             await requireAuth()
             return await indexLoader()
@@ -35,7 +35,7 @@ export const router = createBrowserRouter(
           element: <IndexPage />,
         },
         {
-          path: 'new',
+          path: "new",
           loader: async () => {
             await requireAuth()
             return null
@@ -43,7 +43,7 @@ export const router = createBrowserRouter(
           element: <NewPage />,
         },
         {
-          path: 'links/:slug',
+          path: "links/:slug",
           loader: async ({ params }) => {
             await requireAuth()
             return await linkDetailLoader(params.slug!)
@@ -51,7 +51,7 @@ export const router = createBrowserRouter(
           element: <LinkDetailPage />,
         },
         {
-          path: 'settings',
+          path: "settings",
           loader: async () => {
             await requireAuth()
             return await settingsLoader()
@@ -61,5 +61,5 @@ export const router = createBrowserRouter(
       ],
     },
   ],
-  { basename: '/admin' },
+  { basename: "/admin" },
 )

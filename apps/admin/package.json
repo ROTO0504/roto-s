@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "panda codegen && tsc -b --noEmit",
     "panda": "panda codegen",
-    "test": "panda codegen && vitest run",
+    "test": "panda codegen && vitest run --passWithNoTests",
     "test:watch": "panda codegen && vitest"
   },
   "dependencies": {

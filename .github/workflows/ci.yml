@@ -30,6 +30,12 @@ jobs:
         working-directory: apps/admin
         run: bunx panda codegen
 
+      - name: Format check
+        run: bun run format:check
+
+      - name: Lint
+        run: bun run lint
+
       - name: Typecheck (api)
         working-directory: apps/api
         run: bunx tsc --noEmit
@@ -37,6 +43,14 @@ jobs:
       - name: Typecheck (admin)
         working-directory: apps/admin
         run: bunx tsc -b --noEmit
+
+      - name: Test (api)
+        working-directory: apps/api
+        run: bun run test
+
+      - name: Test (admin)
+        working-directory: apps/admin
+        run: bun run test
 
       - name: Build admin SPA
         working-directory: apps/admin

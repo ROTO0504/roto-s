@@ -8,10 +8,29 @@
   ],
   "packageManager": "bun@1.3.11",
   "scripts": {
+    "dev": "concurrently -k -n api,admin -c blue,magenta \"bun --cwd apps/api run dev\" \"bun --cwd apps/admin run dev\"",
     "dev:api": "bun --cwd apps/api run dev",
     "dev:admin": "bun --cwd apps/admin run dev",
     "build:admin": "bun --cwd apps/admin run build",
     "deploy": "bun run build:admin && bun --cwd apps/api run deploy",
-    "typecheck": "bun --cwd apps/api run typecheck && bun --cwd apps/admin run typecheck"
+    "typecheck": "bun --cwd apps/api run typecheck && bun --cwd apps/admin run typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,mjs,cjs,json,md,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,mjs,cjs,json,md,yml,yaml}\"",
+    "test": "bun run test:api && bun run test:admin",
+    "test:api": "bun --cwd apps/api run test",
+    "test:admin": "bun --cwd apps/admin run test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9",
+    "concurrently": "^9.2.1",
+    "eslint": "^9",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3",
+    "typescript": "^5.6",
+    "typescript-eslint": "^8.59.2"
   }
 }

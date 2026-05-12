@@ -5,13 +5,16 @@ import { useNavigate } from "react-router"
 
 import { css } from "../../styled-system/css"
 import { button, card, input } from "../../styled-system/recipes"
+import { Field } from "../components/Field"
+import { useToast } from "../components/ToastProvider"
 import { fadeIn } from "../lib/animations"
 import { api } from "../lib/api"
 
 type Mode = "login" | "register"
 
-export function LoginPage() {
+export const LoginPage = () => {
   const navigate = useNavigate()
+  const toast = useToast()
   const [mode, setMode] = useState<Mode>("login")
   const [inviteToken, setInviteToken] = useState("")
   const [label, setLabel] = useState("")
@@ -37,13 +40,14 @@ export function LoginPage() {
     { scope: cardRef },
   )
 
-  async function doLogin() {
+  const doLogin = async () => {
     setBusy(true)
     setError("")
     try {
       const opts = await api.post<Parameters<typeof startAuthentication>[0]["optionsJSON"]>("/api/auth/login/options")
       const cred = await startAuthentication({ optionsJSON: opts })
       await api.post("/api/auth/login/verify", cred)
+      toast.success("サインインしました")
       navigate("/")
     } catch (e) {
       setError(e instanceof Error ? e.message : "login_failed")
@@ -52,7 +56,7 @@ export function LoginPage() {
     }
   }
 
-  async function doRegister() {
+  const doRegister = async () => {
     setBusy(true)
     setError("")
     try {
@@ -64,6 +68,7 @@ export function LoginPage() {
       )
       const cred = await startRegistration({ optionsJSON: opts })
       await api.post("/api/auth/register/verify", { response: cred, label: label || null }, headers)
+      toast.success("パスキーを登録しました")
       navigate("/")
     } catch (e) {
       setError(e instanceof Error ? e.message : "register_failed")
@@ -73,44 +78,89 @@ export function LoginPage() {
   }
 
   return (
-    <div className={css({ minH: "calc(100vh - 4rem)", display: "grid", placeItems: "center", py: "12" })}>
-      <div ref={cardRef} className={card() + " " + css({ width: "sm", maxW: "90vw" })}>
-        <h1 className={css({ fontSize: "lg", fontWeight: 600, mb: "1" })}>roto-s</h1>
-        <p className={css({ fontSize: "xs", color: "gray.400", mb: "6" })}>
-          {mode === "login" ? "パスキーでサインイン" : "初回パスキー登録"}
-        </p>
+    <div
+      className={css({
+        minH: "calc(100vh - 4rem)",
+        display: "grid",
+        placeItems: "center",
+        py: "12",
+        position: "relative",
+      })}
+    >
+      <div
+        aria-hidden="true"
+        className={css({
+          position: "absolute",
+          inset: "0",
+          pointerEvents: "none",
+          backgroundImage: "radial-gradient(ellipse 60% 50% at 50% 30%, rgba(99, 102, 241, 0.15), transparent 70%)",
+        })}
+      />
+      <div
+        ref={cardRef}
+        className={
+          card({ variant: "raised", size: "lg" }) +
+          " " +
+          css({
+            position: "relative",
+            width: "sm",
+            maxW: "calc(100vw - 32px)",
+            boxShadow: "glow",
+            display: "flex",
+            flexDirection: "column",
+            gap: "5",
+          })
+        }
+      >
+        <div className={css({ display: "flex", flexDirection: "column", gap: "1" })}>
+          <h1
+            className={css({
+              fontSize: "xl",
+              fontWeight: 600,
+              letterSpacing: "-0.01em",
+              background: "linear-gradient(135deg, #f4f4f5 0%, #a5b4fc 120%)",
+              backgroundClip: "text",
+              color: "transparent",
+            })}
+          >
+            roto-s
+          </h1>
+          <p className={css({ fontSize: "xs", color: "fg.muted" })}>
+            {mode === "login" ? "パスキーでサインイン" : "初回パスキー登録"}
+          </p>
+        </div>
 
-        {mode === "register" && bootstrap?.inviteEnabled && (
-          <label className={css({ display: "block", mb: "4" })}>
-            <span className={css({ display: "block", fontSize: "xs", color: "gray.400", mb: "1" })}>Invite token</span>
-            <input
-              type="password"
-              autoComplete="off"
-              value={inviteToken}
-              onChange={(e) => setInviteToken(e.target.value)}
-              className={input()}
-              placeholder="wrangler secret put INVITE_TOKEN の値"
-            />
-          </label>
-        )}
-        {mode === "register" && (
-          <label className={css({ display: "block", mb: "4" })}>
-            <span className={css({ display: "block", fontSize: "xs", color: "gray.400", mb: "1" })}>Device label</span>
-            <input
-              type="text"
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              className={input()}
-              placeholder="MacBook Touch ID"
-            />
-          </label>
-        )}
+        <div className={css({ display: "flex", flexDirection: "column", gap: "3" })}>
+          {mode === "register" && bootstrap?.inviteEnabled && (
+            <Field label="Invite token">
+              <input
+                type="password"
+                autoComplete="off"
+                value={inviteToken}
+                onChange={(e) => setInviteToken(e.target.value)}
+                className={input()}
+                placeholder="wrangler secret put INVITE_TOKEN の値"
+              />
+            </Field>
+          )}
+          {mode === "register" && (
+            <Field label="Device label">
+              <input
+                type="text"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                className={input()}
+                placeholder="MacBook Touch ID"
+              />
+            </Field>
+          )}
+        </div>
 
         <button
           type="button"
           onClick={mode === "login" ? doLogin : doRegister}
           disabled={busy}
-          className={button({ size: "md", variant: "solid" }) + " " + css({ width: "100%" })}
+          className={button({ variant: "solid", size: "md", isFullWidth: true })}
         >
           {busy ? "..." : mode === "login" ? "Sign in with passkey" : "Register passkey"}
         </button>
@@ -119,13 +169,29 @@ export function LoginPage() {
           <button
             type="button"
             onClick={() => setMode((m) => (m === "login" ? "register" : "login"))}
-            className={button({ variant: "ghost", size: "sm" }) + " " + css({ width: "100%", mt: "3", fontSize: "xs" })}
+            className={button({ variant: "ghost", size: "sm", isFullWidth: true })}
           >
             {mode === "login" ? "+ Register a new device" : "← Back to sign in"}
           </button>
         )}
 
-        {error && <p className={css({ mt: "4", fontSize: "xs", color: "red.400" })}>{error}</p>}
+        {error && (
+          <p
+            role="alert"
+            className={css({
+              fontSize: "xs",
+              color: "danger.default",
+              bg: "danger.subtle",
+              border: "1px solid",
+              borderColor: "danger.border",
+              borderRadius: "md",
+              px: "3",
+              py: "2",
+            })}
+          >
+            {error}
+          </p>
+        )}
       </div>
     </div>
   )

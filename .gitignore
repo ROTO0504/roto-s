@@ -9,3 +9,4 @@ dist/
 apps/admin/styled-system/
 *.tsbuildinfo
 .DS_Store
+.claude/worktrees/happy-maxwell-94cb4c

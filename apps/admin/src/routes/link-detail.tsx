@@ -3,74 +3,127 @@ import { useLoaderData, useRevalidator, useNavigate } from "react-router"
 
 import { css } from "../../styled-system/css"
 import { button, card, input } from "../../styled-system/recipes"
-import { api, type Stats, type StatsRow } from "../lib/api"
+import { Badge } from "../components/Badge"
+import { useConfirm } from "../components/ConfirmDialog"
+import { Field } from "../components/Field"
+import { Group } from "../components/Group"
+import { PageHeader } from "../components/PageHeader"
+import { Stat } from "../components/Stat"
+import { useToast } from "../components/ToastProvider"
+import { api, ApiError, type Stats } from "../lib/api"
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"] as const
 
-export async function linkDetailLoader(slug: string) {
-  return await api.get<Stats>(`/api/links/${slug}/stats?range=7d`)
-}
+export const linkDetailLoader = async (slug: string) => api.get<Stats>(`/api/links/${slug}/stats?range=7d`)
 
-export function LinkDetailPage() {
+export const LinkDetailPage = () => {
   const stats = useLoaderData() as Stats
   const revalidator = useRevalidator()
   const navigate = useNavigate()
+  const toast = useToast()
+  const confirm = useConfirm()
   const [editing, setEditing] = useState(false)
+  const [busy, setBusy] = useState(false)
   const [form, setForm] = useState({
     url: stats.link.url,
     utm: Object.fromEntries(UTM_KEYS.map((k) => [k, stats.link[k] ?? ""])) as Record<string, string>,
   })
 
-  async function save() {
-    const utm: Record<string, string> = {}
-    for (const k of UTM_KEYS) utm[k] = form.utm[k]
-    await api.patch(`/api/links/${stats.link.slug}`, { url: form.url, utm })
-    setEditing(false)
-    revalidator.revalidate()
+  const save = async () => {
+    setBusy(true)
+    try {
+      const utm: Record<string, string> = {}
+      for (const k of UTM_KEYS) utm[k] = form.utm[k]
+      await api.patch(`/api/links/${stats.link.slug}`, { url: form.url, utm })
+      toast.success("更新しました")
+      setEditing(false)
+      revalidator.revalidate()
+    } catch (e) {
+      toast.error(e instanceof ApiError ? `更新に失敗しました (${e.status})` : "更新に失敗しました")
+    } finally {
+      setBusy(false)
+    }
   }
 
-  async function remove() {
-    if (!confirm(`Delete /${stats.link.slug}?`)) return
-    await api.delete(`/api/links/${stats.link.slug}`)
-    navigate("/")
+  const remove = async () => {
+    const ok = await confirm({
+      title: `/${stats.link.slug} を削除しますか？`,
+      message: "このリンクと関連する統計は復元できません。",
+      confirmLabel: "削除",
+      danger: true,
+    })
+    if (!ok) return
+    try {
+      await api.delete(`/api/links/${stats.link.slug}`)
+      toast.success("削除しました")
+      navigate("/")
+    } catch (e) {
+      toast.error(e instanceof ApiError ? `削除に失敗しました (${e.status})` : "削除に失敗しました")
+    }
   }
+
+  const sparkline = stats.byDay.map((d) => d.clicks)
 
   return (
     <div>
-      <header className={css({ display: "flex", alignItems: "baseline", justifyContent: "space-between", mb: "6" })}>
-        <h1 className={css({ fontSize: "2xl", fontWeight: 600, fontFamily: "monospace" })}>/{stats.link.slug}</h1>
-        <div className={css({ display: "flex", gap: "2" })}>
-          {!editing && (
-            <button
-              type="button"
-              onClick={() => setEditing(true)}
-              className={button({ size: "sm", variant: "outline" })}
-            >
-              Edit
+      <PageHeader
+        title={`/${stats.link.slug}`}
+        description={`${stats.range} のクリック統計`}
+        mono
+        actions={
+          <>
+            {!editing && (
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className={button({ size: "sm", variant: "outline" })}
+              >
+                Edit
+              </button>
+            )}
+            <button type="button" onClick={remove} className={button({ size: "sm", variant: "danger" })}>
+              Delete
             </button>
-          )}
-          <button type="button" onClick={remove} className={button({ size: "sm", variant: "danger" })}>
-            Delete
-          </button>
-        </div>
-      </header>
+          </>
+        }
+      />
 
-      <div className={css({ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "3", mb: "6" })}>
-        <Stat label="Total (range)" value={stats.total} />
-        <Stat label="Lifetime" value={stats.link.clicks} />
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: {
+            base: "repeat(2, 1fr)",
+            md: "repeat(4, 1fr)",
+          },
+          gap: "3",
+          mb: "6",
+        })}
+      >
+        <Stat label={`Total (${stats.range})`} value={stats.total.toLocaleString()} sparkline={sparkline} />
+        <Stat label="Lifetime" value={stats.link.clicks.toLocaleString()} />
         <Stat label="Range" value={stats.range} />
-        <Stat label="Created" value={new Date(stats.link.created_at).toLocaleDateString()} />
+        <Stat
+          label="Created"
+          value={new Date(stats.link.created_at).toLocaleDateString()}
+          hint={new Date(stats.link.created_at).toLocaleString()}
+        />
       </div>
 
-      <div className={card() + " " + css({ mb: "6" })}>
+      <div className={card({ size: "lg" }) + " " + css({ mb: "6" })}>
         {editing ? (
           <div className={css({ display: "flex", flexDirection: "column", gap: "3" })}>
             <Field label="Destination URL">
               <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className={input()} />
             </Field>
-            <div className={css({ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "3" })}>
+            <div
+              className={css({
+                display: "grid",
+                gridTemplateColumns: { base: "1fr", sm: "repeat(2, 1fr)" },
+                gap: "3",
+              })}
+            >
               {UTM_KEYS.map((k) => (
-                <Field key={k} label={k}>
+                <Field key={k} label={k} mono>
                   <input
                     value={form.utm[k]}
                     onChange={(e) => setForm({ ...form, utm: { ...form.utm, [k]: e.target.value } })}
@@ -80,8 +133,8 @@ export function LinkDetailPage() {
               ))}
             </div>
             <div className={css({ display: "flex", gap: "2" })}>
-              <button type="button" onClick={save} className={button({ size: "sm" })}>
-                Save
+              <button type="button" onClick={save} disabled={busy} className={button({ size: "sm" })}>
+                {busy ? "..." : "Save"}
               </button>
               <button
                 type="button"
@@ -93,33 +146,49 @@ export function LinkDetailPage() {
             </div>
           </div>
         ) : (
-          <div>
-            <p className={css({ fontSize: "xs", color: "gray.400", mb: "1" })}>Destination</p>
-            <a
-              href={stats.link.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={css({ wordBreak: "break-all" })}
-            >
-              {stats.link.url}
-            </a>
+          <div className={css({ display: "flex", flexDirection: "column", gap: "3" })}>
+            <div>
+              <p
+                className={css({
+                  fontSize: "xs",
+                  color: "fg.muted",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.06em",
+                  mb: "1",
+                })}
+              >
+                Destination
+              </p>
+              <a
+                href={stats.link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={css({
+                  wordBreak: "break-all",
+                  fontFamily: "mono",
+                  fontSize: "sm",
+                })}
+              >
+                {stats.link.url}
+              </a>
+            </div>
             {UTM_KEYS.some((k) => stats.link[k]) && (
-              <div className={css({ mt: "4", display: "flex", gap: "3", flexWrap: "wrap", fontSize: "xs" })}>
+              <div
+                className={css({
+                  display: "flex",
+                  gap: "2",
+                  flexWrap: "wrap",
+                  pt: "2",
+                  borderTop: "1px solid",
+                  borderColor: "border.subtle",
+                })}
+              >
                 {UTM_KEYS.map((k) =>
                   stats.link[k] ? (
-                    <span
-                      key={k}
-                      className={css({
-                        bg: "gray.800",
-                        color: "gray.300",
-                        px: "2",
-                        py: "1",
-                        borderRadius: "sm",
-                        fontFamily: "monospace",
-                      })}
-                    >
-                      {k}={stats.link[k]}
-                    </span>
+                    <Badge key={k} tone="accent">
+                      <span className={css({ color: "fg.subtle" })}>{k}=</span>
+                      {stats.link[k]}
+                    </Badge>
                   ) : null,
                 )}
               </div>
@@ -128,7 +197,13 @@ export function LinkDetailPage() {
         )}
       </div>
 
-      <div className={css({ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "4" })}>
+      <div
+        className={css({
+          display: "grid",
+          gridTemplateColumns: { base: "1fr", md: "repeat(2, 1fr)" },
+          gap: "4",
+        })}
+      >
         <Group title="By day" rows={stats.byDay} />
         <Group title="By country" rows={stats.byCountry} />
         <Group title="By device" rows={stats.byDevice} />
@@ -138,64 +213,5 @@ export function LinkDetailPage() {
         <Group title="By utm_source" rows={stats.byUtmSource} />
       </div>
     </div>
-  )
-}
-
-function Stat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div
-      className={css({
-        bg: "gray.900",
-        border: "1px solid",
-        borderColor: "gray.800",
-        borderRadius: "lg",
-        p: "4",
-      })}
-    >
-      <p className={css({ fontSize: "xs", color: "gray.400", mb: "1" })}>{label}</p>
-      <p className={css({ fontSize: "xl", fontWeight: 600, fontVariantNumeric: "tabular-nums" })}>{value}</p>
-    </div>
-  )
-}
-
-function Group({ title, rows }: { title: string; rows: StatsRow[] }) {
-  return (
-    <div className={card()}>
-      <h3 className={css({ fontSize: "sm", fontWeight: 500, color: "gray.300", mb: "3" })}>{title}</h3>
-      {rows.length === 0 ? (
-        <p className={css({ fontSize: "xs", color: "gray.500" })}>データなし</p>
-      ) : (
-        <ul className={css({ display: "flex", flexDirection: "column", gap: "1" })}>
-          {rows.slice(0, 8).map((r) => (
-            <li
-              key={r.key}
-              className={css({
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "sm",
-                color: "gray.300",
-                fontVariantNumeric: "tabular-nums",
-              })}
-            >
-              <span
-                className={css({ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxW: "60%" })}
-              >
-                {r.key || "—"}
-              </span>
-              <span>{r.clicks}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label className={css({ display: "block" })}>
-      <span className={css({ display: "block", fontSize: "xs", color: "gray.400", mb: "1" })}>{label}</span>
-      {children}
-    </label>
   )
 }

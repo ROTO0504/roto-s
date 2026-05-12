@@ -7,6 +7,20 @@
     <title>roto-s · admin</title>
   </head>
   <body>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("roto-s.theme") || "system"
+          var r =
+            t === "system"
+              ? window.matchMedia("(prefers-color-scheme: light)").matches
+                ? "light"
+                : "dark"
+              : t
+          document.documentElement.setAttribute("data-theme", r)
+        } catch (e) {}
+      })()
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

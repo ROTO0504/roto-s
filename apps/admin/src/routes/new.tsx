@@ -63,12 +63,12 @@ export const NewPage = () => {
 
   return (
     <div>
-      <PageHeader title="New link" description="目的地 URL を指定して短縮リンクを作成します" />
+      <PageHeader title="新規リンク" description="リンク先 URL を指定して短縮リンクを作成します" />
       <div
         ref={formRef}
         className={card({ size: "lg" }) + " " + css({ display: "flex", flexDirection: "column", gap: "4" })}
       >
-        <Field label="Destination URL *">
+        <Field label="リンク先 URL *">
           <input
             value={form.url}
             onChange={(e) => setForm({ ...form, url: e.target.value })}
@@ -77,7 +77,7 @@ export const NewPage = () => {
             type="url"
           />
         </Field>
-        <Field label="Custom slug (optional)" hint="未指定の場合は自動生成されます">
+        <Field label="カスタムスラッグ（任意）" hint="未指定の場合は自動生成されます">
           <input
             value={form.slug}
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
@@ -92,7 +92,7 @@ export const NewPage = () => {
           className={button({ variant: "ghost", size: "sm" }) + " " + css({ alignSelf: "flex-start" })}
           aria-expanded={showUtm}
         >
-          {showUtm ? "− UTM parameters を閉じる" : "+ UTM parameters を追加"}
+          {showUtm ? "− UTM パラメータを閉じる" : "+ UTM パラメータを追加"}
         </button>
         {showUtm && (
           <div
@@ -132,7 +132,7 @@ export const NewPage = () => {
             onClick={() => navigate("/")}
             className={button({ variant: "ghost" }) + " " + css({ width: { base: "100%", sm: "auto" } })}
           >
-            Cancel
+            キャンセル
           </button>
           <button
             type="button"
@@ -140,7 +140,7 @@ export const NewPage = () => {
             disabled={busy || !form.url}
             className={button() + " " + css({ width: { base: "100%", sm: "auto" } })}
           >
-            {busy ? "作成中..." : "Create"}
+            {busy ? "作成中..." : "作成"}
           </button>
         </div>
         {error && (
@@ -195,10 +195,10 @@ export const NewPage = () => {
           </div>
           <div className={css({ display: "flex", gap: "2" })}>
             <button type="button" onClick={copyShort} className={button({ size: "sm", variant: "outline" })}>
-              Copy
+              コピー
             </button>
             <button type="button" onClick={() => navigate("/")} className={button({ size: "sm" })}>
-              Done
+              完了
             </button>
           </div>
         </div>

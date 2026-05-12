@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router"
 
 import { css } from "../../styled-system/css"
 import { button } from "../../styled-system/recipes"
+import { ThemeToggle } from "../components/ThemeToggle"
 import { api } from "../lib/api"
 
 export const Layout = () => {
@@ -30,7 +31,7 @@ export const Layout = () => {
             h: "14",
             borderBottom: "1px solid",
             borderColor: "border.default",
-            bg: "rgba(10, 10, 11, 0.7)",
+            bg: { base: "rgba(10, 10, 11, 0.7)", _light: "rgba(255, 255, 255, 0.75)" },
             backdropFilter: "saturate(140%) blur(12px)",
           })}
         >
@@ -48,7 +49,10 @@ export const Layout = () => {
                 fontWeight: 600,
                 fontSize: "sm",
                 letterSpacing: "-0.01em",
-                background: "linear-gradient(135deg, #f4f4f5 0%, #a5b4fc 120%)",
+                background: {
+                  base: "linear-gradient(135deg, #f4f4f5 0%, #a5b4fc 120%)",
+                  _light: "linear-gradient(135deg, #18181b 0%, #4f46e5 120%)",
+                },
                 backgroundClip: "text",
                 color: "transparent",
                 _hover: { color: "transparent" },
@@ -66,14 +70,17 @@ export const Layout = () => {
                 "&::-webkit-scrollbar": { display: "none" },
               })}
             >
-              <NavTab to="/">Links</NavTab>
-              <NavTab to="/new">New</NavTab>
-              <NavTab to="/settings">Settings</NavTab>
+              <NavTab to="/">リンク</NavTab>
+              <NavTab to="/new">新規作成</NavTab>
+              <NavTab to="/settings">設定</NavTab>
             </nav>
           </div>
-          <button type="button" onClick={logout} className={button({ variant: "ghost", size: "xs" })}>
-            Sign out
-          </button>
+          <div className={css({ display: "flex", alignItems: "center", gap: "2" })}>
+            <ThemeToggle />
+            <button type="button" onClick={logout} className={button({ variant: "ghost", size: "xs" })}>
+              サインアウト
+            </button>
+          </div>
         </header>
       )}
       <main

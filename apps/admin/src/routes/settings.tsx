@@ -43,7 +43,7 @@ export const SettingsPage = () => {
   const remove = async (id: string, label: string | null) => {
     const ok = await confirm({
       title: "パスキーを削除しますか？",
-      message: `${label || "(no label)"} を削除します。このパスキーではサインインできなくなります。`,
+      message: `${label || "（名称なし）"} を削除します。このパスキーではサインインできなくなります。`,
       confirmLabel: "削除",
       danger: true,
     })
@@ -59,7 +59,7 @@ export const SettingsPage = () => {
 
   return (
     <div>
-      <PageHeader title="Settings" description="パスキーの追加・削除を管理します" />
+      <PageHeader title="設定" description="パスキーの追加・削除を管理します" />
 
       <section
         className={card({ size: "lg" }) + " " + css({ mb: "6", display: "flex", flexDirection: "column", gap: "3" })}
@@ -82,7 +82,7 @@ export const SettingsPage = () => {
             alignItems: { base: "stretch", sm: "flex-end" },
           })}
         >
-          <Field label="Device label">
+          <Field label="デバイス名">
             <input
               value={label}
               onChange={(e) => setLabel(e.target.value)}
@@ -140,11 +140,11 @@ export const SettingsPage = () => {
               >
                 <div className={css({ minW: 0 })}>
                   <p className={css({ fontSize: "sm", color: "fg.default", fontWeight: 500 })}>
-                    {p.label || "(no label)"}
+                    {p.label || "（名称なし）"}
                   </p>
                   <p className={css({ fontSize: "xs", color: "fg.subtle", mt: "0.5" })}>
-                    Added {new Date(p.created_at).toLocaleDateString()} ·{" "}
-                    {p.last_used_at ? `Used ${new Date(p.last_used_at).toLocaleDateString()}` : "Never used"}
+                    追加: {new Date(p.created_at).toLocaleDateString()} ・{" "}
+                    {p.last_used_at ? `最終使用: ${new Date(p.last_used_at).toLocaleDateString()}` : "未使用"}
                   </p>
                 </div>
                 <button
@@ -152,7 +152,7 @@ export const SettingsPage = () => {
                   onClick={() => remove(p.credential_id, p.label)}
                   className={button({ variant: "danger", size: "sm" })}
                 >
-                  Delete
+                  削除
                 </button>
               </li>
             ))}

@@ -1,9 +1,9 @@
 import { useGSAP } from "@gsap/react"
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { Link, useLoaderData, useRevalidator } from "react-router"
 
 import { css } from "../../styled-system/css"
-import { button } from "../../styled-system/recipes"
+import { button, input } from "../../styled-system/recipes"
 import { useConfirm } from "../components/ConfirmDialog"
 import { EmptyState } from "../components/EmptyState"
 import { PageHeader } from "../components/PageHeader"
@@ -24,7 +24,18 @@ export const IndexPage = () => {
   const tableRef = useRef<HTMLTableSectionElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState<string | null>(null)
+  const [query, setQuery] = useState("")
   const checkRef = useRef<HTMLSpanElement>(null)
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return links
+    return links.filter((l) =>
+      [l.slug, l.url, l.utm_source, l.utm_medium, l.utm_campaign, l.utm_term, l.utm_content].some(
+        (v) => v && String(v).toLowerCase().includes(q),
+      ),
+    )
+  }, [links, query])
 
   useGSAP(
     () => {
@@ -65,24 +76,46 @@ export const IndexPage = () => {
   return (
     <div>
       <PageHeader
-        title="Links"
-        description={links.length > 0 ? `${links.length} 件のリンク` : undefined}
+        title="リンク"
+        description={
+          links.length > 0
+            ? query
+              ? `${filtered.length} / ${links.length} 件`
+              : `${links.length} 件のリンク`
+            : undefined
+        }
         actions={
-          <Link to="/new" className={button({ size: "sm" })}>
-            <span aria-hidden>+</span> New
-          </Link>
+          <div className={css({ display: "flex", gap: "2", alignItems: "center" })}>
+            {links.length > 0 && (
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="スラッグ / URL で検索"
+                className={input() + " " + css({ h: "8", width: { base: "40", sm: "56" } })}
+              />
+            )}
+            <Link to="/new" className={button({ size: "sm" })}>
+              <span aria-hidden>+</span> 新規
+            </Link>
+          </div>
         }
       />
 
       {links.length === 0 ? (
         <EmptyState
           title="まだリンクがありません"
-          description="+ New ボタンから最初のリンクを作成してください。"
+          description="「+ 新規」ボタンから最初のリンクを作成してください。"
           action={
             <Link to="/new" className={button({ size: "sm" })}>
-              + New
+              + 新規
             </Link>
           }
+        />
+      ) : filtered.length === 0 ? (
+        <EmptyState
+          title="該当するリンクがありません"
+          description={`「${query}」に一致するリンクは見つかりませんでした`}
         />
       ) : (
         <>
@@ -116,7 +149,7 @@ export const IndexPage = () => {
                       letterSpacing: "0.06em",
                     })}
                   >
-                    Slug
+                    スラッグ
                   </th>
                   <th
                     className={css({
@@ -127,7 +160,7 @@ export const IndexPage = () => {
                       letterSpacing: "0.06em",
                     })}
                   >
-                    Destination
+                    リンク先
                   </th>
                   <th
                     className={css({
@@ -139,13 +172,13 @@ export const IndexPage = () => {
                       letterSpacing: "0.06em",
                     })}
                   >
-                    Clicks
+                    クリック数
                   </th>
                   <th className={css({ p: "3" })}></th>
                 </tr>
               </thead>
               <tbody ref={tableRef}>
-                {links.map((l) => (
+                {filtered.map((l) => (
                   <tr
                     key={l.slug}
                     className={css({
@@ -195,10 +228,10 @@ export const IndexPage = () => {
                         >
                           {copied === l.slug ? (
                             <span ref={checkRef} className={css({ color: "success.default" })}>
-                              ✓ Copied
+                              ✓ コピー済み
                             </span>
                           ) : (
-                            "Copy"
+                            "コピー"
                           )}
                         </button>
                         <button
@@ -206,7 +239,7 @@ export const IndexPage = () => {
                           onClick={() => remove(l.slug)}
                           className={button({ variant: "danger", size: "sm" })}
                         >
-                          Delete
+                          削除
                         </button>
                       </div>
                     </td>
@@ -224,7 +257,7 @@ export const IndexPage = () => {
               gap: "2",
             })}
           >
-            {links.map((l) => (
+            {filtered.map((l) => (
               <div
                 key={l.slug}
                 data-row
@@ -274,14 +307,14 @@ export const IndexPage = () => {
                     onClick={() => copyShort(l.slug)}
                     className={button({ variant: "ghost", size: "xs" })}
                   >
-                    {copied === l.slug ? "✓ Copied" : "Copy"}
+                    {copied === l.slug ? "✓ コピー済み" : "コピー"}
                   </button>
                   <button
                     type="button"
                     onClick={() => remove(l.slug)}
                     className={button({ variant: "danger", size: "xs" })}
                   >
-                    Delete
+                    削除
                   </button>
                 </div>
               </div>

@@ -184,6 +184,9 @@ export default defineConfig({
   include: ["./src/**/*.{ts,tsx}"],
   exclude: [],
   outdir: "styled-system",
+  conditions: {
+    light: "[data-theme=light] &",
+  },
   theme: {
     extend: {
       breakpoints: {
@@ -267,36 +270,36 @@ export default defineConfig({
       semanticTokens: {
         colors: {
           bg: {
-            canvas: { value: "{colors.gray.950}" },
-            surface: { value: "{colors.gray.900}" },
-            surfaceRaised: { value: "{colors.gray.850}" },
-            subtle: { value: "{colors.gray.925}" },
+            canvas: { value: { base: "{colors.gray.950}", _light: "#ffffff" } },
+            surface: { value: { base: "{colors.gray.900}", _light: "{colors.gray.50}" } },
+            surfaceRaised: { value: { base: "{colors.gray.850}", _light: "#ffffff" } },
+            subtle: { value: { base: "{colors.gray.925}", _light: "{colors.gray.100}" } },
           },
           fg: {
-            default: { value: "{colors.gray.100}" },
-            muted: { value: "{colors.gray.400}" },
-            subtle: { value: "{colors.gray.500}" },
+            default: { value: { base: "{colors.gray.100}", _light: "{colors.gray.900}" } },
+            muted: { value: { base: "{colors.gray.400}", _light: "{colors.gray.600}" } },
+            subtle: { value: { base: "{colors.gray.500}", _light: "{colors.gray.500}" } },
           },
           border: {
-            subtle: { value: "{colors.gray.900}" },
-            default: { value: "{colors.gray.800}" },
-            strong: { value: "{colors.gray.700}" },
-            stronger: { value: "{colors.gray.600}" },
+            subtle: { value: { base: "{colors.gray.900}", _light: "{colors.gray.100}" } },
+            default: { value: { base: "{colors.gray.800}", _light: "{colors.gray.200}" } },
+            strong: { value: { base: "{colors.gray.700}", _light: "{colors.gray.300}" } },
+            stronger: { value: { base: "{colors.gray.600}", _light: "{colors.gray.400}" } },
           },
           accent: {
-            default: { value: "{colors.accent.500}" },
-            hover: { value: "{colors.accent.600}" },
+            default: { value: { base: "{colors.accent.500}", _light: "{colors.accent.600}" } },
+            hover: { value: { base: "{colors.accent.600}", _light: "{colors.accent.700}" } },
             subtle: { value: "rgba(99, 102, 241, 0.12)" },
             subtleHover: { value: "rgba(99, 102, 241, 0.2)" },
             border: { value: "rgba(99, 102, 241, 0.35)" },
           },
           danger: {
-            default: { value: "{colors.red.400}" },
+            default: { value: { base: "{colors.red.400}", _light: "{colors.red.500}" } },
             subtle: { value: "rgba(248, 113, 113, 0.1)" },
-            border: { value: "{colors.red.900}" },
+            border: { value: { base: "{colors.red.900}", _light: "{colors.red.300}" } },
           },
           success: {
-            default: { value: "{colors.green.400}" },
+            default: { value: { base: "{colors.green.400}", _light: "{colors.green.500}" } },
           },
         },
       },
@@ -314,7 +317,10 @@ export default defineConfig({
     body: {
       margin: 0,
       minH: "100vh",
-      backgroundImage: "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.08), transparent 60%)",
+      backgroundImage: {
+        base: "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.08), transparent 60%)",
+        _light: "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.06), transparent 60%)",
+      },
       backgroundAttachment: "fixed",
     },
     a: {
@@ -327,12 +333,12 @@ export default defineConfig({
       "&::-webkit-scrollbar": { width: "10px", height: "10px" },
       "&::-webkit-scrollbar-track": { bg: "transparent" },
       "&::-webkit-scrollbar-thumb": {
-        bg: "gray.800",
+        bg: { base: "gray.800", _light: "gray.300" },
         borderRadius: "full",
         border: "2px solid",
         borderColor: "bg.canvas",
       },
-      "&::-webkit-scrollbar-thumb:hover": { bg: "gray.700" },
+      "&::-webkit-scrollbar-thumb:hover": { bg: { base: "gray.700", _light: "gray.400" } },
     },
     ":focus-visible": {
       outline: "2px solid",

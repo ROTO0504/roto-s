@@ -78,11 +78,11 @@ export const LinkDetailPage = () => {
                 onClick={() => setEditing(true)}
                 className={button({ size: "sm", variant: "outline" })}
               >
-                Edit
+                編集
               </button>
             )}
             <button type="button" onClick={remove} className={button({ size: "sm", variant: "danger" })}>
-              Delete
+              削除
             </button>
           </>
         }
@@ -99,11 +99,11 @@ export const LinkDetailPage = () => {
           mb: "6",
         })}
       >
-        <Stat label={`Total (${stats.range})`} value={stats.total.toLocaleString()} sparkline={sparkline} />
-        <Stat label="Lifetime" value={stats.link.clicks.toLocaleString()} />
-        <Stat label="Range" value={stats.range} />
+        <Stat label={`期間内合計（${stats.range}）`} value={stats.total.toLocaleString()} sparkline={sparkline} />
+        <Stat label="累計" value={stats.link.clicks.toLocaleString()} />
+        <Stat label="期間" value={stats.range} />
         <Stat
-          label="Created"
+          label="作成日"
           value={new Date(stats.link.created_at).toLocaleDateString()}
           hint={new Date(stats.link.created_at).toLocaleString()}
         />
@@ -112,7 +112,7 @@ export const LinkDetailPage = () => {
       <div className={card({ size: "lg" }) + " " + css({ mb: "6" })}>
         {editing ? (
           <div className={css({ display: "flex", flexDirection: "column", gap: "3" })}>
-            <Field label="Destination URL">
+            <Field label="リンク先 URL">
               <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} className={input()} />
             </Field>
             <div
@@ -134,14 +134,14 @@ export const LinkDetailPage = () => {
             </div>
             <div className={css({ display: "flex", gap: "2" })}>
               <button type="button" onClick={save} disabled={busy} className={button({ size: "sm" })}>
-                {busy ? "..." : "Save"}
+                {busy ? "..." : "保存"}
               </button>
               <button
                 type="button"
                 onClick={() => setEditing(false)}
                 className={button({ size: "sm", variant: "ghost" })}
               >
-                Cancel
+                キャンセル
               </button>
             </div>
           </div>
@@ -157,7 +157,7 @@ export const LinkDetailPage = () => {
                   mb: "1",
                 })}
               >
-                Destination
+                リンク先
               </p>
               <a
                 href={stats.link.url}
@@ -204,13 +204,13 @@ export const LinkDetailPage = () => {
           gap: "4",
         })}
       >
-        <Group title="By day" rows={stats.byDay} />
-        <Group title="By country" rows={stats.byCountry} />
-        <Group title="By device" rows={stats.byDevice} />
-        <Group title="By browser" rows={stats.byBrowser} />
-        <Group title="By OS" rows={stats.byOs} />
-        <Group title="By referer" rows={stats.byReferer} />
-        <Group title="By utm_source" rows={stats.byUtmSource} />
+        <Group title="日別" rows={stats.byDay} />
+        <Group title="国別" rows={stats.byCountry} />
+        <Group title="デバイス別" rows={stats.byDevice} />
+        <Group title="ブラウザ別" rows={stats.byBrowser} />
+        <Group title="OS 別" rows={stats.byOs} />
+        <Group title="リファラ別" rows={stats.byReferer} />
+        <Group title="utm_source 別" rows={stats.byUtmSource} />
       </div>
     </div>
   )

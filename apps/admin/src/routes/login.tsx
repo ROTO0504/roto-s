@@ -118,7 +118,10 @@ export const LoginPage = () => {
               fontSize: "xl",
               fontWeight: 600,
               letterSpacing: "-0.01em",
-              background: "linear-gradient(135deg, #f4f4f5 0%, #a5b4fc 120%)",
+              background: {
+                base: "linear-gradient(135deg, #f4f4f5 0%, #a5b4fc 120%)",
+                _light: "linear-gradient(135deg, #18181b 0%, #4f46e5 120%)",
+              },
               backgroundClip: "text",
               color: "transparent",
             })}
@@ -132,7 +135,7 @@ export const LoginPage = () => {
 
         <div className={css({ display: "flex", flexDirection: "column", gap: "3" })}>
           {mode === "register" && bootstrap?.inviteEnabled && (
-            <Field label="Invite token">
+            <Field label="招待トークン">
               <input
                 type="password"
                 autoComplete="off"
@@ -144,7 +147,7 @@ export const LoginPage = () => {
             </Field>
           )}
           {mode === "register" && (
-            <Field label="Device label">
+            <Field label="デバイス名">
               <input
                 type="text"
                 value={label}
@@ -162,7 +165,7 @@ export const LoginPage = () => {
           disabled={busy}
           className={button({ variant: "solid", size: "md", isFullWidth: true })}
         >
-          {busy ? "..." : mode === "login" ? "Sign in with passkey" : "Register passkey"}
+          {busy ? "..." : mode === "login" ? "パスキーでサインイン" : "パスキーを登録"}
         </button>
 
         {bootstrap && !bootstrap.empty && (
@@ -171,7 +174,7 @@ export const LoginPage = () => {
             onClick={() => setMode((m) => (m === "login" ? "register" : "login"))}
             className={button({ variant: "ghost", size: "sm", isFullWidth: true })}
           >
-            {mode === "login" ? "+ Register a new device" : "← Back to sign in"}
+            {mode === "login" ? "+ 新しいデバイスを登録" : "← サインインに戻る"}
           </button>
         )}
 

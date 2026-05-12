@@ -1,6 +1,7 @@
+import { startRegistration } from "@simplewebauthn/browser"
 import { useState } from "react"
 import { useLoaderData, useRevalidator } from "react-router"
-import { startRegistration } from "@simplewebauthn/browser"
+
 import { css } from "../../styled-system/css"
 import { button, card, input } from "../../styled-system/recipes"
 import { api, type PasskeyRow } from "../lib/api"

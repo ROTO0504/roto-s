@@ -1,11 +1,12 @@
+import { useGSAP } from "@gsap/react"
+import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
 import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router"
-import { startAuthentication, startRegistration } from "@simplewebauthn/browser"
-import { useGSAP } from "@gsap/react"
+
 import { css } from "../../styled-system/css"
 import { button, card, input } from "../../styled-system/recipes"
-import { api } from "../lib/api"
 import { fadeIn } from "../lib/animations"
+import { api } from "../lib/api"
 
 type Mode = "login" | "register"
 

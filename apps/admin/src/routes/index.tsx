@@ -1,10 +1,11 @@
+import { useGSAP } from "@gsap/react"
 import { useRef, useState } from "react"
 import { Link, useLoaderData, useRevalidator } from "react-router"
-import { useGSAP } from "@gsap/react"
+
 import { css } from "../../styled-system/css"
 import { button } from "../../styled-system/recipes"
-import { api, type Link as LinkRow } from "../lib/api"
 import { popCheck, staggerRows } from "../lib/animations"
+import { api, type Link as LinkRow } from "../lib/api"
 
 export async function indexLoader() {
   const data = await api.get<{ links: LinkRow[] }>("/api/links")

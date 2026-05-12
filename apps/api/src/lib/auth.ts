@@ -1,5 +1,7 @@
 import type { MiddlewareHandler } from "hono"
+
 import type { Bindings, Variables } from "../types"
+
 import { readSessionCookie, verifySessionToken } from "./session"
 
 export const requireSession: MiddlewareHandler<{ Bindings: Bindings; Variables: Variables }> = async (c, next) => {

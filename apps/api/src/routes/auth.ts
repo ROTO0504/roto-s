@@ -1,5 +1,6 @@
 import { Hono } from "hono"
-import type { Bindings, Variables } from "../types"
+
+import { requireInviteToken, requireSession } from "../lib/auth"
 import {
   buildAuthenticationOptions,
   buildRegistrationOptions,
@@ -18,7 +19,7 @@ import {
   verifyChallengeToken,
   verifySessionToken,
 } from "../lib/session"
-import { requireInviteToken, requireSession } from "../lib/auth"
+import type { Bindings, Variables } from "../types"
 
 export const authRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 

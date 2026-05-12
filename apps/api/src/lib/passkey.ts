@@ -11,8 +11,10 @@ import type {
   PublicKeyCredentialRequestOptionsJSON,
   RegistrationResponseJSON,
 } from "@simplewebauthn/types"
-import { base64UrlToBytes, bytesToBase64Url } from "./base64"
+
 import type { Bindings, Passkey } from "../types"
+
+import { base64UrlToBytes, bytesToBase64Url } from "./base64"
 
 const SOLO_USER_ID = new TextEncoder().encode("roto-s-admin")
 

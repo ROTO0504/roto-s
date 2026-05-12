@@ -1,10 +1,11 @@
 import { Hono } from "hono"
-import type { Bindings, Link, Variables } from "../types"
+
+import * as ae from "../lib/ae"
 import { requireSession } from "../lib/auth"
 import { randomSlug, validateCustomSlug } from "../lib/slug"
-import { validateDestinationUrl } from "../lib/validate"
 import { UTM_KEYS } from "../lib/utm"
-import * as ae from "../lib/ae"
+import { validateDestinationUrl } from "../lib/validate"
+import type { Bindings, Link, Variables } from "../types"
 
 export const linksRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 

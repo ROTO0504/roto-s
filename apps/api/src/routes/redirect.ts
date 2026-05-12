@@ -1,7 +1,8 @@
 import { Hono } from "hono"
-import type { Bindings, Link, Variables } from "../types"
-import { buildDestUrl } from "../lib/utm"
+
 import { parseUA } from "../lib/ua"
+import { buildDestUrl } from "../lib/utm"
+import type { Bindings, Link, Variables } from "../types"
 
 export const redirectRoute = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 

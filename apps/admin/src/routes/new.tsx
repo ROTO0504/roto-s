@@ -1,10 +1,11 @@
+import { useGSAP } from "@gsap/react"
 import { useRef, useState } from "react"
 import { useNavigate } from "react-router"
-import { useGSAP } from "@gsap/react"
+
 import { css } from "../../styled-system/css"
 import { button, card, input } from "../../styled-system/recipes"
-import { api, ApiError } from "../lib/api"
 import { fadeIn, slideToast } from "../lib/animations"
+import { api, ApiError } from "../lib/api"
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"] as const
 

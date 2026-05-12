@@ -1,8 +1,9 @@
 import { Hono } from "hono"
-import type { Bindings, Variables } from "./types"
-import { redirectRoute } from "./routes/redirect"
-import { linksRoute } from "./routes/links"
+
 import { authRoute } from "./routes/auth"
+import { linksRoute } from "./routes/links"
+import { redirectRoute } from "./routes/redirect"
+import type { Bindings, Variables } from "./types"
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 

@@ -1,10 +1,11 @@
 import { createBrowserRouter, redirect } from "react-router"
+
 import { api, ApiError } from "./lib/api"
 import { Layout } from "./routes/_layout"
-import { LoginPage } from "./routes/login"
 import { IndexPage, indexLoader } from "./routes/index"
-import { NewPage } from "./routes/new"
 import { LinkDetailPage, linkDetailLoader } from "./routes/link-detail"
+import { LoginPage } from "./routes/login"
+import { NewPage } from "./routes/new"
 import { SettingsPage, settingsLoader } from "./routes/settings"
 
 async function requireAuth() {
